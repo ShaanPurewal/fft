@@ -33,8 +33,9 @@ func main() {
 	// Aquire (gen)
 	generateSamples(samples[:], custom)
 	fmt.Printf("\n%d samples generated\n", SAMPLE_SIZE)
+	
 	// Perform DFT
-	DFT(samples[:], coefficients[:])
+	DFFT(samples[:], coefficients[:])
 	fmt.Println("Finished performing Fourier Transform")
 
 	// Perform IDFT
