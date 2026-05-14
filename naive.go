@@ -2,11 +2,6 @@ package main
 
 import "math"
 
-type Coeff struct {
-	cos float64
-	sin float64
-}
-
 func DFT(samples []float64, coefficients []Coeff) {
 	for f_idx := range coefficients {
 		coeff := Coeff{}
