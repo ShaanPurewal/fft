@@ -16,7 +16,7 @@ func DFFT(samples []float64, coefficients []Coeff) {
 }
 
 func recFFT(samples []float64) []Coeff {
-	// Base Case: Non-Even (kinda slow for now)
+	// Base Case: Non-Even (kinda slow)
 	N := len(samples)
 	if N % 2 == 1 {
 		coefficients := make([]Coeff, N)
@@ -56,3 +56,72 @@ func recFFT(samples []float64) []Coeff {
 
 	return coefficients
 }
+
+func IDFFT(coefficients []Coeff, recovered []float64) {
+	N := len(recovered)
+
+	// Rebuild conjugate-symmetric half
+	X := make([]Coeff, N)
+	copy(X, coefficients)
+
+	for k := 1; k < len(coefficients) && k < N-k; k++ {
+		X[N-k] = Coeff{
+			cos: X[k].cos,
+			sin: -X[k].sin,
+		}
+	}
+
+	x := recIFFT(X)
+
+	// Normalize
+	for i := range recovered {
+		recovered[i] = x[i].cos / float64(N)
+	}
+}
+
+func recIFFT(coefficients []Coeff) []Coeff {
+	// Base Case: Non-Even (kinda slow)
+	N := len(coefficients)
+	if N % 2 == 1 {
+		recovered := make([]float64, N)
+		IDFT(coefficients, recovered)
+
+		out := make([]Coeff, N)
+		for i, v := range recovered {
+			out[i].cos = v
+		}
+		return out
+	}
+
+	even := make([]Coeff, N/2)
+	odd := make([]Coeff, N/2)
+
+	for i := 0; i < N/2; i++ {
+		even[i] = coefficients[2*i]
+		odd[i] = coefficients[2*i + 1]
+	}
+
+	E := recIFFT(even)
+	O := recIFFT(odd)
+
+	recovered := make([]Coeff, N)
+
+	for f_idx := 0; f_idx < N/2; f_idx++ {
+		angle := 2.0 * PI * float64(f_idx) / float64(N)
+
+		c := math.Cos(angle)
+		s := math.Sin(angle)
+
+		tcos := O[f_idx].cos*c - O[f_idx].sin*s
+		tsin := O[f_idx].cos*s + O[f_idx].sin*c
+
+		recovered[f_idx].cos = E[f_idx].cos + tcos
+		recovered[f_idx].sin = E[f_idx].sin + tsin
+
+		recovered[f_idx + N/2].cos = E[f_idx].cos - tcos
+		recovered[f_idx + N/2].sin = E[f_idx].sin - tsin
+	}
+
+	return recovered
+}
+

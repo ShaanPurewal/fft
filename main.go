@@ -24,7 +24,7 @@ import (
 */
 
 const (
-	SAMPLE_SIZE = 10_000
+	SAMPLE_SIZE = 1_048_576
 	PI = math.Pi
 	NYQUIST = SAMPLE_SIZE / 2 + 1
 )
@@ -43,7 +43,7 @@ func main() {
 	fmt.Println("Finished performing Fourier Transform")
 
 	// Perform IDFT
-	IDFT(coefficients[:], recovered[:])
+	IDFFT(coefficients[:], recovered[:])
 	fmt.Println("Finished performing Inverse Fourier Transform")
 
 	// Compare Results
