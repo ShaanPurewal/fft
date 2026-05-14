@@ -24,7 +24,7 @@ func recFFT(samples []float64) []Coeff {
 		return coefficients
 	}
 
-	// Recusive: split into even and odd freq bins
+	// Recusive: split into even and odd samples
 	even := make([]float64, N/2)
 	odd := make([]float64, N/2)
 
@@ -83,16 +83,10 @@ func recIFFT(coefficients []Coeff) []Coeff {
 	// Base Case: Non-Even (kinda slow)
 	N := len(coefficients)
 	if N % 2 == 1 {
-		recovered := make([]float64, N)
-		IDFT(coefficients, recovered)
-
-		out := make([]Coeff, N)
-		for i, v := range recovered {
-			out[i].cos = v
-		}
-		return out
+		return slowIFFT(coefficients)
 	}
 
+	// Recusive: split into even and odd samples
 	even := make([]Coeff, N/2)
 	odd := make([]Coeff, N/2)
 
@@ -120,6 +114,26 @@ func recIFFT(coefficients []Coeff) []Coeff {
 
 		recovered[f_idx + N/2].cos = E[f_idx].cos - tcos
 		recovered[f_idx + N/2].sin = E[f_idx].sin - tsin
+	}
+
+	return recovered
+}
+
+func slowIFFT(X []Coeff) []Coeff {
+	N := len(X)
+	recovered := make([]Coeff, N)
+
+	for r_idx := range recovered {
+		for f_idx := range X {
+			ratio := float64(r_idx) / float64(N)
+			angle := 2.0 * PI * float64(f_idx) * ratio
+
+			c := math.Cos(angle)
+			s := math.Sin(angle)
+
+			recovered[r_idx].cos += X[f_idx].cos*c - X[f_idx].sin*s
+			recovered[r_idx].sin += X[f_idx].cos*s + X[f_idx].sin*c
+		}
 	}
 
 	return recovered

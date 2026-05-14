@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"github.com/shaanpurewal/fft/internal"
 )
 
@@ -23,19 +25,26 @@ import (
    
 */
 
-const (
-	SAMPLE_SIZE = 1_048_576
-	NYQUIST = SAMPLE_SIZE / 2 + 1
-)
-
 func main() {
-	var samples [SAMPLE_SIZE]float64
-	var coefficients [NYQUIST]internal.Coeff
-	var recovered [SAMPLE_SIZE]float64
+	// Parse arguments
+	args := os.Args[1:]
+
+	sample_size := 64 * 1024
+	if len(args) > 0 {
+		val, err := strconv.Atoi(args[0])
+		if err != nil { panic("Expected: ./fft SAMPLE_SIZE") }
+		sample_size = val
+	}
+
+	nyquist := sample_size / 2 + 1
+	
+	samples := make([]float64, sample_size)
+	coefficients := make([]internal.Coeff, nyquist)
+	recovered := make([]float64, sample_size)
 
 	// Aquire (gen)
 	internal.GenerateSamples(samples[:], internal.Custom)
-	fmt.Printf("\n%d samples generated\n", SAMPLE_SIZE)
+	fmt.Printf("\n%d samples generated\n", sample_size)
 	
 	// Perform DFT
 	internal.DFFT(samples[:], coefficients[:])
