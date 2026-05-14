@@ -12,8 +12,12 @@ import (
 
    Discrete Fourier Transform (w/ Inverse)
      - Naive
-     - TODO: FFT
-     - TODO: Parallel
+     - FFT
+       - RADIX-2 (w/ naive fallback)
+       - TODO: MIXED-RADIX
+       - TODO: Bluestien
+       - TODO: In-Place
+     - TODO: Parallel (Optimal)
 
    (Shaan Purewal)
    
