@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"math"
+	"github.com/shaanpurewal/fft/internal"
 )
 
 /*
@@ -25,28 +25,27 @@ import (
 
 const (
 	SAMPLE_SIZE = 1_048_576
-	PI = math.Pi
 	NYQUIST = SAMPLE_SIZE / 2 + 1
 )
 
 func main() {
 	var samples [SAMPLE_SIZE]float64
-	var coefficients [NYQUIST]Coeff
+	var coefficients [NYQUIST]internal.Coeff
 	var recovered [SAMPLE_SIZE]float64
 
 	// Aquire (gen)
-	generateSamples(samples[:], custom)
+	internal.GenerateSamples(samples[:], internal.Custom)
 	fmt.Printf("\n%d samples generated\n", SAMPLE_SIZE)
 	
 	// Perform DFT
-	DFFT(samples[:], coefficients[:])
+	internal.DFFT(samples[:], coefficients[:])
 	fmt.Println("Finished performing Fourier Transform")
 
 	// Perform IDFT
-	IDFFT(coefficients[:], recovered[:])
+	internal.IDFFT(coefficients[:], recovered[:])
 	fmt.Println("Finished performing Inverse Fourier Transform")
 
 	// Compare Results
-	fmt.Printf("\nMSE: %.30f\n", meanSquared(samples[:], recovered[:]))
+	fmt.Printf("\nMSE: %.30f\n", internal.MeanSquared(samples[:], recovered[:]))
 }
 
